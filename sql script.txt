@@ -1,0 +1,186 @@
+###############################################################################################################################
+CREATE TABLE [dbo].[user](
+	[Id] [int] NOT NULL,
+	[email] [varchar](50) NOT NULL,
+	[first_name] [varchar](50) NOT NULL,
+	[last_name] [varchar](50) NOT NULL,
+	[phone] [int] NOT NULL,
+ CONSTRAINT [PK_user] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+Go
+#########################################################################################################################################
+
+CREATE TABLE [dbo].[address](
+	[Id] [int] NOT NULL,
+	[address_line1] [varchar](100) NOT NULL,
+	[address_line2] [varchar](100) NOT NULL,
+	[city] [varchar](50) NOT NULL,
+	[country] [varchar](50) NOT NULL,
+	[pin_code] [varchar](50) NOT NULL,
+	[state] [varchar](50) NOT NULL,
+	[user_id] [int] NOT NULL,
+ CONSTRAINT [PK_address] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[address]  WITH CHECK ADD  CONSTRAINT [FK_address_user] FOREIGN KEY([user_id])
+REFERENCES [dbo].[user] ([Id])
+GO
+
+ALTER TABLE [dbo].[address] CHECK CONSTRAINT [FK_address_user]
+GO
+
+#################################################################################################################################################################
+
+CREATE TABLE [dbo].[categories](
+	[Id] [int] NOT NULL,
+	[name] [varchar](100) NOT NULL,
+ CONSTRAINT [PK_categories] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+#####################################################################################################################################################################
+
+CREATE TABLE [dbo].[products](
+	[Id] [int] NOT NULL,
+	[name] [varchar](50) NOT NULL,
+	[price] [float] NOT NULL,
+	[category_id] [int] NOT NULL,
+ CONSTRAINT [PK_products] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[products]  WITH CHECK ADD  CONSTRAINT [FK_products_categories] FOREIGN KEY([category_id])
+REFERENCES [dbo].[categories] ([Id])
+GO
+
+ALTER TABLE [dbo].[products] CHECK CONSTRAINT [FK_products_categories]
+GO
+
+ALTER TABLE [dbo].[products]  WITH CHECK ADD  CONSTRAINT [FK_products_order_details] FOREIGN KEY([category_id])
+REFERENCES [dbo].[order_details] ([Id])
+GO
+
+ALTER TABLE [dbo].[products] CHECK CONSTRAINT [FK_products_order_details]
+GO
+
+####################################################################################################################################################################
+
+CREATE TABLE [dbo].[orders](
+	[Id] [int] NOT NULL,
+	[order_date] [datetime2](7) NOT NULL,
+	[total_price] [float] NOT NULL,
+	[customer_id] [int] NOT NULL,
+	[delivery_address_id] [int] NOT NULL,
+	[employee_id] [int] NOT NULL,
+ CONSTRAINT [PK_orders] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[orders]  WITH CHECK ADD  CONSTRAINT [FK_orders_order_details] FOREIGN KEY([customer_id])
+REFERENCES [dbo].[order_details] ([Id])
+GO
+
+ALTER TABLE [dbo].[orders] CHECK CONSTRAINT [FK_orders_order_details]
+GO
+
+ALTER TABLE [dbo].[orders]  WITH CHECK ADD  CONSTRAINT [FK_orders_user] FOREIGN KEY([customer_id])
+REFERENCES [dbo].[user] ([Id])
+GO
+
+ALTER TABLE [dbo].[orders] CHECK CONSTRAINT [FK_orders_user]
+GO
+
+ALTER TABLE [dbo].[orders]  WITH CHECK ADD  CONSTRAINT [FK_orders_user1] FOREIGN KEY([customer_id])
+REFERENCES [dbo].[user] ([Id])
+GO
+
+##########################################################################################################################################################
+
+CREATE TABLE [dbo].[order_details](
+	[Id] [int] NOT NULL,
+	[price] [float] NOT NULL,
+	[quantity] [int] NOT NULL,
+	[order_id] [int] NOT NULL,
+	[product_id] [int] NOT NULL,
+ CONSTRAINT [PK_order_details] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+###############################################################################################################################################################
+
+CREATE TABLE [dbo].[cart](
+	[Id] [int] NOT NULL,
+	[quantity] [int] NOT NULL,
+	[customer_id] [int] NOT NULL,
+	[product_id] [int] NOT NULL,
+ CONSTRAINT [PK_cart] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[cart]  WITH CHECK ADD  CONSTRAINT [FK_cart_user] FOREIGN KEY([customer_id])
+REFERENCES [dbo].[user] ([Id])
+GO
+
+ALTER TABLE [dbo].[cart] CHECK CONSTRAINT [FK_cart_user]
+GO
+
+########################################################################################################################################################
+
+CREATE TABLE [dbo].[stock](
+	[product_id] [int] NOT NULL,
+	[quantity] [int] NOT NULL
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[stock]  WITH CHECK ADD  CONSTRAINT [FK_stock_products] FOREIGN KEY([product_id])
+REFERENCES [dbo].[products] ([Id])
+GO
+
+ALTER TABLE [dbo].[stock] CHECK CONSTRAINT [FK_stock_products]
+GO
+
+###########################################################################################################################################################
+
+CREATE TABLE [dbo].[payment](
+	[Id] [int] NOT NULL,
+	[amount] [float] NOT NULL,
+	[payment_date] [datetime2](7) NOT NULL,
+	[type] [varchar](50) NOT NULL,
+	[order_id] [int] NOT NULL,
+ CONSTRAINT [PK_payment] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[payment]  WITH CHECK ADD  CONSTRAINT [FK_payment_orders] FOREIGN KEY([order_id])
+REFERENCES [dbo].[orders] ([Id])
+GO
+
+ALTER TABLE [dbo].[payment] CHECK CONSTRAINT [FK_payment_orders]
+GO
+
+##################################################################################################################################################
